@@ -17,6 +17,7 @@ let spectrum; // Frequency spectrum
 let waveform; // Waveform  
 
 //GAME VARIABLES------------------------------- 
+let showGame = false;
 let xSpeed;
 let x, y;
 let xStart, yStart;
@@ -44,25 +45,24 @@ let textShow = true;
 let angelShow = false;
 
 function preload() {
-    ubie = loadImage("Ubie.png");
+    ubie = loadImage("Ubie/Ubie.png");
     words = loadFont("font.ttf");
-  
+
     //RUNNING
     for (let i = 1; i < 8; i++) {
-      ubieR[i - 1] = loadImage("Run/Ubie_Run" + i + ".png");
+        ubieR[i - 1] = loadImage("Ubie/Run/Ubie_Run" + i + ".png");
     }
-  
+
     //Jumping
     for (let i = 0; i < 2; i++) {
-      ubieJ[i] = loadImage("Jump/" + i + ".png");
+        ubieJ[i] = loadImage("Ubie/Jump/" + i + ".png");
     }
-  
+
     //ROLLING
     for (let i = 1; i < 15; i++) {
-      ubieRo[i - 1] = loadImage("Roll/Ubie_Flip" + i + ".png");
+        ubieRo[i - 1] = loadImage("Ubie/Roll/Ubie_Flip" + i + ".png");
     }
-  }
-
+}
 
 
 function setup() {
@@ -74,32 +74,44 @@ function setup() {
 
     volSenseSlider = createSlider(0, 200, volSense, sliderStep);
 
+    
+    setupGame(); 
+
 }
 
 function draw() {
+    if (!showGame) {
+        background(200, 100, 100, 0.1);
 
-    background(200, 100, 100, 0.1);
+        if (startAudio) {
 
-    if (startAudio) {
+            vol = mic.getLevel(); // Get volume level
+            spectrum = fft.analyze(); // Get frequency spectrum
+            waveform = fft.waveform(); // Get waveform
 
-        vol = mic.getLevel(); // Get volume level
-        spectrum = fft.analyze(); // Get frequency spectrum
-        waveform = fft.waveform(); // Get waveform
+            volSense = volSenseSlider.value(); // Get volume sensitivity
+            normVol = vol * volSense; // Normalize volume
 
-        volSense = volSenseSlider.value(); // Get volume sensitivity
-        normVol = vol * volSense; // Normalize volume
+            waveForm(); // Draw waveform
+            spectrumF(); // Draw frequency spectrum
 
-        waveForm(); // Draw waveform
-        spectrumF(); // Draw frequency spectrum
+        }
 
+        smileyFace();
     }
 
-    smileyFace();
+    if(startAudio){
+    setTimeout(displayGame, 5000);
+    } 
 
 
 }
 
 function mousePressed() {
+
+    if (showGame) {
+        textShow = !textShow;
+    }
 
     userStartAudio();   //NEED THIS TO START AUDIO CONTEXT
 
@@ -113,43 +125,43 @@ function mousePressed() {
     }
 }
 
-function waveForm(){
-    if(startAudio){
-     //WAVEFORM VISUALIZATION-------------------
-     noFill();
-     beginShape();
-     for (let i = 0; i < waveform.length; i++) {
-         let x = map(i, 0, waveform.length, 0, width);
-         let y = map(waveform[i], -1, 1, 0, height);
-         let strokeCol = map(waveform[i], -1, 1, 0, 360);
-         let strokeSat = map(waveform[i], -1, 1, 0, 100);
+function waveForm() {
+    if (startAudio) {
+        //WAVEFORM VISUALIZATION-------------------
+        noFill();
+        beginShape();
+        for (let i = 0; i < waveform.length; i++) {
+            let x = map(i, 0, waveform.length, 0, width);
+            let y = map(waveform[i], -1, 1, 0, height);
+            let strokeCol = map(waveform[i], -1, 1, 0, 360);
+            let strokeSat = map(waveform[i], -1, 1, 0, 100);
 
-         stroke(strokeCol, strokeSat, 100);
-         strokeWeight(globeScale * 0.01);
-         vertex(x, y);
+            stroke(strokeCol, strokeSat, 100);
+            strokeWeight(globeScale * 0.01);
+            vertex(x, y);
 
-     }
-     endShape();
+        }
+        endShape();
     }
 }
 
-function spectrumF(){
+function spectrumF() {
 
-    if(startAudio){
-        for(let i = 0; i < spectrum.length; i++){
+    if (startAudio) {
+        for (let i = 0; i < spectrum.length; i++) {
 
             let rectX = map(i, 0, spectrum.length, 0, width);
-            let rectY = height; 
-            let rectW = globeScale*0.05;
-            let rectH = -map(spectrum[i], 0, 255, 0, height); 
+            let rectY = height;
+            let rectW = globeScale * 0.05;
+            let rectH = -map(spectrum[i], 0, 255, 0, height);
             noStroke();
             fill(spectrum[i], 100, 100, 0.1);
-            rect(rectX, rectY, rectW, rectH); 
+            rect(rectX, rectY, rectW, rectH);
 
             let rectX2 = width - rectX - rectW;
-            rect(rectX2, rectY, rectW, rectH); 
+            rect(rectX2, rectY, rectW, rectH);
 
-           
+
         }
     }
 
