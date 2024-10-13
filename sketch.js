@@ -101,7 +101,7 @@ function draw() {
     }
 
     if(startAudio){
-    setTimeout(displayGame, 5000);
+    setTimeout(displayGame, 20000);
     } 
 
 
