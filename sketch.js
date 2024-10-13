@@ -95,13 +95,16 @@ function draw() {
             waveForm(); // Draw waveform
             spectrumF(); // Draw frequency spectrum
 
+            console.log(waveform);
+
         }
 
         smileyFace();
     }
 
+    //Show Game after ? seconds------------------
     if(startAudio){
-    setTimeout(displayGame, 20000);
+    setTimeout(displayGame, 60000);
     } 
 
 
